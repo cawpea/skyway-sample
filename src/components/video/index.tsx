@@ -138,35 +138,52 @@ export const Video: FC = () => {
 
   return (
     <div>
-      <p>
-        ID:{" "}
-        <span id="my-id" ref={myIdRef}>
-          {me?.id}
-        </span>
-      </p>
-      <div>
-        room name: <input id="room-name" type="text" ref={roomNameRef} />
-        <button id="join" ref={joinRef} onClick={join}>
-          join
-        </button>
+      <div className="flex items-center justify-between p-4 bg-gray-100">
+        <p>
+          <span>ID:</span>
+          <span id="my-id" className="ml-4" ref={myIdRef}>
+            {me?.id}
+          </span>
+        </p>
+        <div className="flex items-center gap-2">
+          room name:{" "}
+          <input
+            id="room-name"
+            className="h-8 border border-gray-400"
+            type="text"
+            ref={roomNameRef}
+          />
+          <button
+            id="join"
+            className="bg-blue-500 text-white font-bold px-4 py-1 rounded-md hover:bg-blue-600 active:bg-blue-700"
+            ref={joinRef}
+            onClick={join}
+          >
+            join
+          </button>
+        </div>
       </div>
 
-      <video width="400px" muted playsInline ref={videoRef}></video>
-
-      {currentRoom && me && (
-        <section>
-          <h2>Publishers</h2>
-          {publications
-            .filter((publication) => publication.publisher.id !== me.id)
-            .map((publication) => (
-              <Publication
-                key={publication.id}
-                me={me}
-                publication={publication}
-              />
-            ))}
-        </section>
-      )}
+      <div className="flex w-full h-[calc(100vh-64px-50px)] gap-4">
+        <div className="bg-red-100 flex items-center">
+          <video width="400" muted playsInline ref={videoRef}></video>
+        </div>
+        <div className="bg-blue-100 flex-1">
+          {currentRoom && me && publications && (
+            <>
+              {publications
+                .filter((publication) => publication.publisher.id !== me.id)
+                .map((publication) => (
+                  <Publication
+                    key={publication.id}
+                    me={me}
+                    publication={publication}
+                  />
+                ))}
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
