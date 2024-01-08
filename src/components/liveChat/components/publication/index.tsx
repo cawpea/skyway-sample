@@ -19,20 +19,18 @@ export const Publication: FC<Props> = ({ me, publication }) => {
 
   const subscribe = useCallback(async () => {
     if (me.id === publication.publisher.id) return;
+
+    let currentPublisherIds: string[] = [];
     me.subscriptions.forEach((subscription) => {
-      console.log("subscription", subscription);
+      currentPublisherIds.push(subscription.publication.publisher.id);
     });
+
+    // NOTE: すでにsubscribeしている場合は処理をスキップする
+    if (currentPublisherIds.includes(publication.publisher.id)) return;
+
     const { stream } = (await me.subscribe(publication.id)) as {
       stream: RemoteAudioStream | RemoteVideoStream;
     };
-    console.log(
-      "me",
-      me.id,
-      `publisher`,
-      publication.publisher.id,
-      "track",
-      stream.track.kind
-    );
     setStream(stream);
   }, [publication, me]);
 

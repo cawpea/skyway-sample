@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import {
   SkyWayStreamFactory,
   SkyWayContext,
@@ -25,6 +25,30 @@ export const LiveChat: FC = () => {
   const [publications, setPublications] = useState<RoomPublication[]>([]);
 
   const addPublications = useRef<RoomPublication[]>([]);
+
+  const userPublications = useMemo<{ [key: string]: RoomPublication[] }>(() => {
+    if (!publications || !me) return {};
+    return (
+      publications
+        .filter((publication) => publication.publisher.id !== me.id)
+        // NOTE: videoとaudioをまとめるためにpublisher.idでグルーピングする
+        .reduce<{ [key: string]: RoomPublication[] }>((acc, publication) => {
+          if (acc[publication.publisher.id]) {
+            acc[publication.publisher.id].push(publication);
+          } else {
+            acc[publication.publisher.id] = [publication];
+          }
+          return acc;
+        }, {})
+    );
+  }, [publications, me]);
+
+  const gridColumnsName = useMemo(() => {
+    const userLength = Object.keys(userPublications).length;
+    if (userLength <= 1) return "grid-cols-1";
+    if (userLength <= 2) return "grid-cols-2";
+    return "grid-cols-3";
+  }, [userPublications]);
 
   const startVideo = async () => {
     if (!videoRef.current) return;
@@ -119,35 +143,27 @@ export const LiveChat: FC = () => {
         <div className="bg-red-100 flex items-center">
           <video width="400" muted playsInline ref={videoRef}></video>
         </div>
-        <div className="bg-blue-100 flex-1">
+        <div
+          className={`bg-blue-100 flex-1 grid gap-4 ${gridColumnsName} overflow-auto`}
+        >
           {currentRoom && me && publications && (
             <>
-              {Object.entries(
-                publications
-                  .filter((publication) => publication.publisher.id !== me.id)
-                  // NOTE: videoとaudioをまとめるためにpublisher.idでグルーピングする
-                  .reduce<{ [key: string]: RoomPublication[] }>(
-                    (acc, publication) => {
-                      if (acc[publication.publisher.id]) {
-                        acc[publication.publisher.id].push(publication);
-                      } else {
-                        acc[publication.publisher.id] = [publication];
-                      }
-                      return acc;
-                    },
-                    {}
-                  )
-              ).map(([publisherId, publications]) => (
-                <div key={publisherId} className="p-4 bg-gray-100">
-                  {publications.map((publication) => (
-                    <Publication
-                      key={publication.id}
-                      me={me}
-                      publication={publication}
-                    />
-                  ))}
-                </div>
-              ))}
+              {Object.entries(userPublications).map(
+                ([publisherId, publications]) => (
+                  <div
+                    key={publisherId}
+                    className="flex justify-center items-center bg-blue-200"
+                  >
+                    {publications.map((publication) => (
+                      <Publication
+                        key={publication.id}
+                        me={me}
+                        publication={publication}
+                      />
+                    ))}
+                  </div>
+                )
+              )}
             </>
           )}
         </div>
