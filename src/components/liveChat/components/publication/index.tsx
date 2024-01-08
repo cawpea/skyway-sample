@@ -55,17 +55,22 @@ export const Publication: FC<Props> = ({ me, publication }) => {
   }, [isFirstRender, subscribe]);
 
   return (
-    <div>
+    <>
       {/* <button type="button" onClick={subscribe} ref={buttonRef}>
         {publication.publisher.id}: ${publication.contentType}
       </button> */}
 
       {stream && stream.track.kind === "video" && (
-        <video playsInline autoPlay ref={videoRef}></video>
+        <video playsInline autoPlay ref={videoRef} className="w-full"></video>
       )}
       {stream && stream.track.kind === "audio" && (
-        <audio controls autoPlay ref={audioRef}></audio>
+        <audio
+          controls
+          autoPlay
+          ref={audioRef}
+          className="invisible h-0"
+        ></audio>
       )}
-    </div>
+    </>
   );
 };

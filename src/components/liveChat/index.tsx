@@ -122,15 +122,32 @@ export const LiveChat: FC = () => {
         <div className="bg-blue-100 flex-1">
           {currentRoom && me && publications && (
             <>
-              {publications
-                .filter((publication) => publication.publisher.id !== me.id)
-                .map((publication) => (
-                  <Publication
-                    key={publication.id}
-                    me={me}
-                    publication={publication}
-                  />
-                ))}
+              {Object.entries(
+                publications
+                  .filter((publication) => publication.publisher.id !== me.id)
+                  // NOTE: videoとaudioをまとめるためにpublisher.idでグルーピングする
+                  .reduce<{ [key: string]: RoomPublication[] }>(
+                    (acc, publication) => {
+                      if (acc[publication.publisher.id]) {
+                        acc[publication.publisher.id].push(publication);
+                      } else {
+                        acc[publication.publisher.id] = [publication];
+                      }
+                      return acc;
+                    },
+                    {}
+                  )
+              ).map(([publisherId, publications]) => (
+                <div key={publisherId} className="p-4 bg-gray-100">
+                  {publications.map((publication) => (
+                    <Publication
+                      key={publication.id}
+                      me={me}
+                      publication={publication}
+                    />
+                  ))}
+                </div>
+              ))}
             </>
           )}
         </div>
