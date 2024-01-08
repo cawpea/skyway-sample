@@ -1,5 +1,5 @@
 import "./App.css";
-import { Video } from "./components/video";
+import { LiveChat } from "./components/liveChat";
 
 function App() {
   return (
@@ -8,7 +8,7 @@ function App() {
         <h1 className="font-bold">Skyway Sample</h1>
       </header>
       <main>
-        <Video />
+        <LiveChat />
       </main>
     </div>
   );

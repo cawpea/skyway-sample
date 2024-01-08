@@ -12,7 +12,7 @@ import {
 import { token } from "../../skyWay";
 import { Publication } from "./components/publication";
 
-export const Video: FC = () => {
+export const LiveChat: FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const roomNameRef = useRef<HTMLInputElement>(null);
   const myIdRef = useRef<HTMLSpanElement>(null);
