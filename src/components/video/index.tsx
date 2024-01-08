@@ -57,13 +57,6 @@ export const Video: FC = () => {
     await me.publish(currentAudio);
     await me.publish(currentVideo);
 
-    console.log("me", me.id);
-
-    console.log(
-      "room",
-      room.publications.map((p) => p.publisher.id)
-    );
-
     addPublications.current = room.publications.filter(
       (publication) => publication.publisher.id !== me.id
     );
@@ -77,7 +70,7 @@ export const Video: FC = () => {
     if (!currentRoom || !me) return;
 
     currentRoom.onStreamPublished.add((e) => {
-      console.log("onStreamPublished", e.publication.id);
+      // console.log("onStreamPublished", e.publication.id);
 
       /**
        * NOTE: 複数のイベントが発火するため、そのままsetPublicationsを呼ぶとステート更新が間に合わない
@@ -88,7 +81,7 @@ export const Video: FC = () => {
       }
 
       setTimeout(() => {
-        console.log("setPublications", publications, addPublications);
+        // console.log("setPublications", publications, addPublications);
         setPublications([...publications, ...addPublications.current]);
       }, 100);
     });

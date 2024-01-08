@@ -4,7 +4,7 @@ import {
   RemoteAudioStream,
   RemoteVideoStream,
 } from "@skyway-sdk/room";
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
 
 type Props = {
   me: LocalP2PRoomMember;
@@ -12,16 +12,29 @@ type Props = {
 };
 
 export const Publication: FC<Props> = ({ me, publication }) => {
-  console.log("me", me.id, `publisher`, publication.publisher.id);
-
+  const isFirstRender = useRef(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [stream, setStream] = useState<RemoteAudioStream | RemoteVideoStream>();
 
-  const handleClick = async () => {
-    const { stream } = await me.subscribe(publication.id);
-    setStream(stream as RemoteAudioStream | RemoteVideoStream);
-  };
+  const subscribe = useCallback(async () => {
+    if (me.id === publication.publisher.id) return;
+    me.subscriptions.forEach((subscription) => {
+      console.log("subscription", subscription);
+    });
+    const { stream } = (await me.subscribe(publication.id)) as {
+      stream: RemoteAudioStream | RemoteVideoStream;
+    };
+    console.log(
+      "me",
+      me.id,
+      `publisher`,
+      publication.publisher.id,
+      "track",
+      stream.track.kind
+    );
+    setStream(stream);
+  }, [publication, me]);
 
   useEffect(() => {
     if (!stream) return;
@@ -33,11 +46,19 @@ export const Publication: FC<Props> = ({ me, publication }) => {
     }
   }, [stream]);
 
+  useEffect(() => {
+    // NOTE: 1回目のレンダリングではsubscribeしても有効にならないため、2回目で実行する
+    if (!isFirstRender.current) {
+      subscribe();
+    }
+    isFirstRender.current = false;
+  }, [isFirstRender, subscribe]);
+
   return (
     <div>
-      <button type="button" onClick={handleClick}>
+      {/* <button type="button" onClick={subscribe} ref={buttonRef}>
         {publication.publisher.id}: ${publication.contentType}
-      </button>
+      </button> */}
 
       {stream && stream.track.kind === "video" && (
         <video playsInline autoPlay ref={videoRef}></video>
