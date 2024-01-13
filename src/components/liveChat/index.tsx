@@ -133,6 +133,7 @@ export const LiveChat: FC = () => {
   const stopRecording = () => {
     if (!mediaRecorder.current) return;
     mediaRecorder.current.stop();
+    setRecording(false);
   };
 
   useEffect(() => {
@@ -186,13 +187,23 @@ export const LiveChat: FC = () => {
           >
             Join
           </button>
-          <button
-            type="button"
-            className="bg-blue-500 text-white font-bold px-4 py-1 rounded-md hover:bg-blue-600 active:bg-blue-700"
-            onClick={isRecording ? stopRecording : startRecording}
-          >
-            {isRecording ? "Recording Stop" : "Recording Start"}
-          </button>
+          {isRecording ? (
+            <button
+              type="button"
+              className="bg-red-500 text-white font-bold px-4 py-1 rounded-md hover:bg-red-600 active:bg-red-700"
+              onClick={stopRecording}
+            >
+              Recording Stop
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="bg-blue-500 text-white font-bold px-4 py-1 rounded-md hover:bg-blue-600 active:bg-blue-700"
+              onClick={startRecording}
+            >
+              Recording Start
+            </button>
+          )}
         </div>
       </div>
 
