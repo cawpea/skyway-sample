@@ -11,6 +11,8 @@ import {
 } from "@skyway-sdk/room";
 import { token } from "../../skyWay";
 import { Publication } from "./components/publication";
+import { storage } from "../../firebaseApp";
+import { createFileToStorage } from "../../services/storage";
 
 export const LiveChat: FC = () => {
   const allStream = useRef<MediaStream>();
@@ -94,6 +96,17 @@ export const LiveChat: FC = () => {
     );
   };
 
+  const saveFileToStorage = async (blob: Blob, fileName: string) => {
+    const file = new File([blob], fileName, {
+      type: blob.type,
+      lastModified: new Date().getTime(),
+    });
+    const filePath = `recordings/${fileName}`;
+    await createFileToStorage(storage, file, filePath);
+
+    console.log("saveFileToStorage", filePath);
+  };
+
   const startRecording = async () => {
     console.log("startRecording", allStream);
     if (!allStream.current) return;
@@ -111,19 +124,22 @@ export const LiveChat: FC = () => {
       console.log("Recorder stopped", event);
       console.log("Recorder blobs", recordedBlobs);
 
-      // ダウンロードする
-      const blob = new Blob(recordedBlobs, { type: "video/webm" });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.style.display = "none";
-      a.href = url;
-      a.download = "test.webm";
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-      }, 100);
+      // Storageに保存する
+      // const blob = new Blob(recordedBlobs, { type: "video/webm" });
+      // saveFileToStorage(blob, new Date().toISOString() + ".webm");
+
+      // ローカルにダウンロードする
+      // const url = window.URL.createObjectURL(blob);
+      // const a = document.createElement("a");
+      // a.style.display = "none";
+      // a.href = url;
+      // a.download = "test.webm";
+      // document.body.appendChild(a);
+      // a.click();
+      // setTimeout(() => {
+      //   document.body.removeChild(a);
+      //   window.URL.revokeObjectURL(url);
+      // }, 100);
     };
     mediaRecorder.current.start();
 
