@@ -13,6 +13,9 @@ import { token } from "../../skyWay";
 import { Publication } from "./components/publication";
 
 export const LiveChat: FC = () => {
+  const allStream = useRef<MediaStream>();
+  const mediaRecorder = useRef<MediaRecorder>();
+  const [isRecording, setRecording] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const roomNameRef = useRef<HTMLInputElement>(null);
   const myIdRef = useRef<HTMLSpanElement>(null);
@@ -53,6 +56,8 @@ export const LiveChat: FC = () => {
   const startVideo = async () => {
     if (!videoRef.current) return;
 
+    allStream.current = new MediaStream();
+
     const { audio, video } =
       await SkyWayStreamFactory.createMicrophoneAudioAndCameraStream();
 
@@ -61,6 +66,9 @@ export const LiveChat: FC = () => {
 
     setCurrentAudio(audio);
     setCurrentVideo(video);
+
+    allStream.current.addTrack(audio.track);
+    allStream.current.addTrack(video.track);
   };
 
   const join = async () => {
@@ -84,6 +92,47 @@ export const LiveChat: FC = () => {
     addPublications.current = room.publications.filter(
       (publication) => publication.publisher.id !== me.id
     );
+  };
+
+  const startRecording = async () => {
+    console.log("startRecording", allStream);
+    if (!allStream.current) return;
+
+    mediaRecorder.current = new MediaRecorder(allStream.current);
+    const recordedBlobs: Blob[] = [];
+
+    mediaRecorder.current.ondataavailable = (event) => {
+      console.log("dataAvailable", event);
+      if (event.data && event.data.size > 0) {
+        recordedBlobs.push(event.data);
+      }
+    };
+    mediaRecorder.current.onstop = (event) => {
+      console.log("Recorder stopped", event);
+      console.log("Recorder blobs", recordedBlobs);
+
+      // ダウンロードする
+      const blob = new Blob(recordedBlobs, { type: "video/webm" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.style.display = "none";
+      a.href = url;
+      a.download = "test.webm";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+    };
+    mediaRecorder.current.start();
+
+    setRecording(true);
+  };
+
+  const stopRecording = () => {
+    if (!mediaRecorder.current) return;
+    mediaRecorder.current.stop();
   };
 
   useEffect(() => {
@@ -130,11 +179,19 @@ export const LiveChat: FC = () => {
           />
           <button
             id="join"
+            type="button"
             className="bg-blue-500 text-white font-bold px-4 py-1 rounded-md hover:bg-blue-600 active:bg-blue-700"
             ref={joinRef}
             onClick={join}
           >
-            join
+            Join
+          </button>
+          <button
+            type="button"
+            className="bg-blue-500 text-white font-bold px-4 py-1 rounded-md hover:bg-blue-600 active:bg-blue-700"
+            onClick={isRecording ? stopRecording : startRecording}
+          >
+            {isRecording ? "Recording Stop" : "Recording Start"}
           </button>
         </div>
       </div>
