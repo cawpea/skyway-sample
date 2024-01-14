@@ -13,7 +13,15 @@ const firebaseConfig = {
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
+
 export const db = getFirestore(firebaseApp);
 export const auth = getAuth(firebaseApp);
-export const provider = new GoogleAuthProvider();
 export const storage = getStorage(firebaseApp);
+export const provider = new GoogleAuthProvider();
+
+// NOTE: 特定のメードアドレスのみログインを許可する
+if (process.env.REACT_APP_GOOGLE_AUTH_DOMAIN) {
+  provider.setCustomParameters({
+    hd: process.env.REACT_APP_GOOGLE_AUTH_DOMAIN,
+  });
+}
