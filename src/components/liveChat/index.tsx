@@ -102,9 +102,7 @@ export const LiveChat: FC = () => {
       lastModified: new Date().getTime(),
     });
     const filePath = `recordings/${fileName}`;
-    await createFileToStorage(storage, file, filePath);
-
-    console.log("saveFileToStorage", filePath);
+    return await createFileToStorage(storage, file, filePath);
   };
 
   const startRecording = async () => {
@@ -120,13 +118,18 @@ export const LiveChat: FC = () => {
         recordedBlobs.push(event.data);
       }
     };
-    mediaRecorder.current.onstop = (event) => {
+    mediaRecorder.current.onstop = async (event) => {
       console.log("Recorder stopped", event);
       console.log("Recorder blobs", recordedBlobs);
 
       // Storageに保存する
-      // const blob = new Blob(recordedBlobs, { type: "video/webm" });
-      // saveFileToStorage(blob, new Date().toISOString() + ".webm");
+      const blob = new Blob(recordedBlobs, { type: "video/webm" });
+      const path = await saveFileToStorage(
+        blob,
+        new Date().toISOString() + ".webm"
+      );
+
+      console.log("saveFileToStorage", path);
 
       // ローカルにダウンロードする
       // const url = window.URL.createObjectURL(blob);
