@@ -1,6 +1,6 @@
 import { useAuthState } from "react-firebase-hooks/auth";
 import "./App.css";
-import { LiveChat } from "./components/liveChat";
+import { Button, LiveChat } from "./components";
 import { auth, provider } from "firebaseApp";
 import { signInWithPopup } from "@firebase/auth";
 
@@ -24,20 +24,10 @@ function App() {
     <div className="App">
       <header className="flex items-center justify-between p-4">
         <h1 className="font-bold">Skyway Sample</h1>
-        {user && (
-          <button type="button" onClick={signOut}>
-            Sign out
-          </button>
-        )}
+        {user && <Button onClick={signOut}>Sign out</Button>}
       </header>
       <main>
-        {user ? (
-          <LiveChat />
-        ) : (
-          <button type="button" onClick={signIn}>
-            Sign in
-          </button>
-        )}
+        {user ? <LiveChat /> : <Button onClick={signIn}>Sign in</Button>}
       </main>
     </div>
   );

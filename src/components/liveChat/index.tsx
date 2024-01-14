@@ -9,6 +9,7 @@ import {
   LocalP2PRoomMember,
   P2PRoom,
 } from "@skyway-sdk/room";
+import { Button } from "components";
 import { token } from "../../skyWay";
 import { Publication } from "./components/publication";
 import { storage } from "../../firebaseApp";
@@ -21,7 +22,6 @@ export const LiveChat: FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const roomNameRef = useRef<HTMLInputElement>(null);
   const myIdRef = useRef<HTMLSpanElement>(null);
-  const joinRef = useRef<HTMLButtonElement>(null);
 
   const [currentAudio, setCurrentAudio] = useState<LocalAudioStream>();
   const [currentVideo, setCurrentVideo] = useState<LocalVideoStream>();
@@ -197,15 +197,7 @@ export const LiveChat: FC = () => {
             type="text"
             ref={roomNameRef}
           />
-          <button
-            id="join"
-            type="button"
-            className="bg-blue-500 text-white font-bold px-4 py-1 rounded-md hover:bg-blue-600 active:bg-blue-700"
-            ref={joinRef}
-            onClick={join}
-          >
-            Join
-          </button>
+          <Button onClick={join}>Join</Button>
           {isRecording ? (
             <button
               type="button"
@@ -215,13 +207,7 @@ export const LiveChat: FC = () => {
               Recording Stop
             </button>
           ) : (
-            <button
-              type="button"
-              className="bg-blue-500 text-white font-bold px-4 py-1 rounded-md hover:bg-blue-600 active:bg-blue-700"
-              onClick={startRecording}
-            >
-              Recording Start
-            </button>
+            <Button onClick={startRecording}>Recording Start</Button>
           )}
         </div>
       </div>
