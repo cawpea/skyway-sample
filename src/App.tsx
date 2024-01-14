@@ -24,7 +24,11 @@ function App() {
     <div className="App">
       <header className="flex items-center justify-between p-4">
         <h1 className="font-bold">Skyway Sample</h1>
-        {user && <Button onClick={signOut}>Sign out</Button>}
+        {user && (
+          <Button priority="secondary" onClick={signOut}>
+            Sign out
+          </Button>
+        )}
       </header>
       <main>
         {user ? <LiveChat /> : <Button onClick={signIn}>Sign in</Button>}

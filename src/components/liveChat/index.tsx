@@ -199,13 +199,9 @@ export const LiveChat: FC = () => {
           />
           <Button onClick={join}>Join</Button>
           {isRecording ? (
-            <button
-              type="button"
-              className="bg-red-500 text-white font-bold px-4 py-1 rounded-md hover:bg-red-600 active:bg-red-700"
-              onClick={stopRecording}
-            >
+            <Button priority="destructive" onClick={stopRecording}>
               Recording Stop
-            </button>
+            </Button>
           ) : (
             <Button onClick={startRecording}>Recording Start</Button>
           )}
