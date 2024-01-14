@@ -1,4 +1,5 @@
 import { useAuthState } from "react-firebase-hooks/auth";
+import { ChakraProvider } from "@chakra-ui/react";
 import "./App.css";
 import { Button, LiveChat } from "./components";
 import { auth, provider } from "firebaseApp";
@@ -21,19 +22,21 @@ function App() {
   console.log("user", user);
 
   return (
-    <div className="App">
-      <header className="flex items-center justify-between p-4">
-        <h1 className="font-bold">Skyway Sample</h1>
-        {user && (
-          <Button priority="secondary" onClick={signOut}>
-            Sign out
-          </Button>
-        )}
-      </header>
-      <main>
-        {user ? <LiveChat /> : <Button onClick={signIn}>Sign in</Button>}
-      </main>
-    </div>
+    <ChakraProvider>
+      <div className="App">
+        <header className="flex items-center justify-between p-4">
+          <h1 className="font-bold">Skyway Sample</h1>
+          {user && (
+            <Button priority="secondary" onClick={signOut}>
+              Sign out
+            </Button>
+          )}
+        </header>
+        <main>
+          {user ? <LiveChat /> : <Button onClick={signIn}>Sign in</Button>}
+        </main>
+      </div>
+    </ChakraProvider>
   );
 }
 

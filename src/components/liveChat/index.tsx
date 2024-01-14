@@ -1,4 +1,6 @@
 import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { useToast, Link } from "@chakra-ui/react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   SkyWayStreamFactory,
   SkyWayContext,
@@ -16,6 +18,7 @@ import { storage } from "../../firebaseApp";
 import { createFileToStorage } from "../../services/storage";
 
 export const LiveChat: FC = () => {
+  const toast = useToast();
   const allStream = useRef<MediaStream>();
   const mediaRecorder = useRef<MediaRecorder>();
   const [isRecording, setRecording] = useState<boolean>(false);
@@ -102,7 +105,37 @@ export const LiveChat: FC = () => {
       lastModified: new Date().getTime(),
     });
     const filePath = `recordings/${fileName}`;
-    return await createFileToStorage(storage, file, filePath);
+
+    try {
+      const path = await createFileToStorage(storage, file, filePath);
+
+      toast({
+        title: "Saved recording",
+        description: (
+          <Link
+            href={path}
+            isExternal
+            display="flex"
+            alignItems="center"
+            gap="1"
+          >
+            Download Link
+            <ExternalLinkIcon />
+          </Link>
+        ),
+        status: "success",
+        duration: null,
+        isClosable: true,
+      });
+    } catch (e) {
+      console.error(e);
+      toast({
+        title: "Failed to save recording file",
+        status: "error",
+        duration: null,
+        isClosable: true,
+      });
+    }
   };
 
   const startRecording = async () => {
@@ -124,12 +157,7 @@ export const LiveChat: FC = () => {
 
       // Storageに保存する
       const blob = new Blob(recordedBlobs, { type: "video/webm" });
-      const path = await saveFileToStorage(
-        blob,
-        new Date().toISOString() + ".webm"
-      );
-
-      console.log("saveFileToStorage", path);
+      await saveFileToStorage(blob, new Date().toISOString() + ".webm");
 
       // ローカルにダウンロードする
       // const url = window.URL.createObjectURL(blob);
