@@ -31,6 +31,7 @@ export const Publication: FC<Props> = ({ me, publication }) => {
     const { stream } = (await me.subscribe(publication.id)) as {
       stream: RemoteAudioStream | RemoteVideoStream;
     };
+
     setStream(stream);
   }, [publication, me]);
 
@@ -45,8 +46,8 @@ export const Publication: FC<Props> = ({ me, publication }) => {
   }, [stream]);
 
   useEffect(() => {
-    // NOTE: 1回目のレンダリングではsubscribeしても有効にならないため、2回目で実行する
-    if (!isFirstRender.current) {
+    // NOTE: ローカルだとなぜか2回実行されてしまうため、初回のみsubscribeする
+    if (isFirstRender.current) {
       subscribe();
     }
     isFirstRender.current = false;
@@ -66,7 +67,7 @@ export const Publication: FC<Props> = ({ me, publication }) => {
           controls
           autoPlay
           ref={audioRef}
-          className="invisible h-0"
+          className="invisible w-0 h-0"
         ></audio>
       )}
     </>

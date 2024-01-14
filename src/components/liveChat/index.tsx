@@ -202,7 +202,6 @@ export const LiveChat: FC = () => {
       }
 
       setTimeout(() => {
-        // console.log("setPublications", publications, addPublications);
         setPublications([...publications, ...addPublications.current]);
       }, 100);
     });
