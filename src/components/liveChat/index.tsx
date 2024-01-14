@@ -10,6 +10,8 @@ import {
   RoomPublication,
   LocalP2PRoomMember,
   P2PRoom,
+  RemoteAudioStream,
+  RemoteVideoStream,
 } from "@skyway-sdk/room";
 import { Button } from "components";
 import { token } from "../../skyWay";
@@ -74,6 +76,11 @@ export const LiveChat: FC = () => {
 
     allStream.current.addTrack(audio.track);
     allStream.current.addTrack(video.track);
+  };
+
+  const subscribe = (stream: RemoteAudioStream | RemoteVideoStream) => {
+    console.log("subscribe", stream);
+    allStream.current?.addTrack(stream.track);
   };
 
   const join = async () => {
@@ -191,8 +198,6 @@ export const LiveChat: FC = () => {
     if (!currentRoom || !me) return;
 
     currentRoom.onStreamPublished.add((e) => {
-      // console.log("onStreamPublished", e.publication.id);
-
       /**
        * NOTE: 複数のイベントが発火するため、そのままsetPublicationsを呼ぶとステート更新が間に合わない
        * そのため、一時的に配列に格納してからまとめてsetPublicationsを呼ぶ
@@ -252,6 +257,7 @@ export const LiveChat: FC = () => {
                         key={publication.id}
                         me={me}
                         publication={publication}
+                        onSubscribe={subscribe}
                       />
                     ))}
                   </div>

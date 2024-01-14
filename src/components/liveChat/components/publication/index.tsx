@@ -9,9 +9,10 @@ import { FC, useCallback, useEffect, useRef, useState } from "react";
 type Props = {
   me: LocalP2PRoomMember;
   publication: RoomPublication;
+  onSubscribe?: (stream: RemoteAudioStream | RemoteVideoStream) => void;
 };
 
-export const Publication: FC<Props> = ({ me, publication }) => {
+export const Publication: FC<Props> = ({ me, publication, onSubscribe }) => {
   const isFirstRender = useRef(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -43,7 +44,9 @@ export const Publication: FC<Props> = ({ me, publication }) => {
     if (stream.track.kind === "audio" && audioRef.current) {
       stream.attach(audioRef.current);
     }
-  }, [stream]);
+
+    onSubscribe && onSubscribe(stream);
+  }, [stream, onSubscribe]);
 
   useEffect(() => {
     // NOTE: ローカルだとなぜか2回実行されてしまうため、初回のみsubscribeする
