@@ -1,5 +1,5 @@
 import { FC, useEffect, useMemo, useRef, useState } from "react";
-import { useToast, Link } from "@chakra-ui/react";
+import { Input, useToast, Link, Flex, Box } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   SkyWayStreamFactory,
@@ -218,13 +218,10 @@ export const LiveChat: FC = () => {
           </span>
         </p>
         <div className="flex items-center gap-2">
-          room name:{" "}
-          <input
-            id="room-name"
-            className="h-8 border border-gray-400"
-            type="text"
-            ref={roomNameRef}
-          />
+          <Flex align="center" gap="2">
+            <Box>room name:</Box>
+            <Input w="200px" type="text" id="room-name" ref={roomNameRef} />
+          </Flex>
           <Button onClick={join}>Join</Button>
           {isRecording ? (
             <Button priority="destructive" onClick={stopRecording}>
