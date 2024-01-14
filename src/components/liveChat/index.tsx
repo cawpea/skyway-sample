@@ -23,6 +23,7 @@ export const LiveChat: FC = () => {
   const toast = useToast();
   const allStream = useRef<MediaStream>();
   const mediaRecorder = useRef<MediaRecorder>();
+  const [isJoined, setJoined] = useState<boolean>(false);
   const [isRecording, setRecording] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const roomNameRef = useRef<HTMLInputElement>(null);
@@ -104,6 +105,13 @@ export const LiveChat: FC = () => {
     addPublications.current = room.publications.filter(
       (publication) => publication.publisher.id !== me.id
     );
+    setJoined(true);
+  };
+
+  const leave = () => {
+    if (!currentRoom || !me) return;
+    currentRoom.leave(me);
+    setJoined(false);
   };
 
   const saveFileToStorage = async (blob: Blob, fileName: string) => {
@@ -224,9 +232,22 @@ export const LiveChat: FC = () => {
         <div className="flex items-center gap-2">
           <Flex align="center" gap="2">
             <Box>room name:</Box>
-            <Input w="200px" type="text" id="room-name" ref={roomNameRef} />
+            <Input
+              bg="white"
+              w="200px"
+              type="text"
+              id="room-name"
+              ref={roomNameRef}
+              disabled={isJoined}
+            />
           </Flex>
-          <Button onClick={join}>Join</Button>
+          {isJoined ? (
+            <Button priority="destructive" onClick={leave}>
+              Leave
+            </Button>
+          ) : (
+            <Button onClick={join}>Join</Button>
+          )}
           {isRecording ? (
             <Button priority="destructive" onClick={stopRecording}>
               Recording Stop
