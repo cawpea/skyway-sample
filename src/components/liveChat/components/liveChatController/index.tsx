@@ -1,7 +1,9 @@
 import { FC, useState } from "react";
 import { HStack, Input } from "@chakra-ui/react";
 import { Button, IconButton } from "components";
-import { Disc, Pause } from "lucide-react";
+import { Disc, Pause, Video, VideoOff } from "lucide-react";
+
+export type VideoStatus = "on" | "off";
 
 type Props = {
   isJoined?: boolean;
@@ -9,6 +11,7 @@ type Props = {
   onLeave?: () => void;
   onRecordingStart?: () => void;
   onRecordingStop?: () => void;
+  onVideoChange?: (videoStatus: VideoStatus) => void;
 };
 
 export const LiveChatController: FC<Props> = ({
@@ -17,9 +20,11 @@ export const LiveChatController: FC<Props> = ({
   onLeave,
   onRecordingStart,
   onRecordingStop,
+  onVideoChange,
 }) => {
   const [roomName, setRoomName] = useState<string>("");
   const [isRecording, setRecording] = useState<boolean>(false);
+  const [videoStatus, setVideoStatus] = useState<VideoStatus>("on");
 
   const startRecording = () => {
     onRecordingStart && onRecordingStart();
@@ -29,6 +34,16 @@ export const LiveChatController: FC<Props> = ({
   const stopRecording = () => {
     onRecordingStop && onRecordingStop();
     setRecording(false);
+  };
+
+  const toggleVideo = () => {
+    if (videoStatus === "on") {
+      setVideoStatus("off");
+      onVideoChange && onVideoChange("off");
+    } else {
+      setVideoStatus("on");
+      onVideoChange && onVideoChange("on");
+    }
   };
 
   return (
@@ -49,12 +64,20 @@ export const LiveChatController: FC<Props> = ({
             Leave
           </Button>
         ) : (
-          <Button type="button" onClick={() => onJoin && onJoin(roomName)}>
-            Join
-          </Button>
+          <HStack spacing="2">
+            <Button type="button" onClick={() => onJoin && onJoin(roomName)}>
+              Join
+            </Button>
+            {/* <IconButton icon={Mic} label="Mute" /> */}
+          </HStack>
         )}
         {isJoined && (
-          <HStack ml="4">
+          <HStack ml="2" spacing="2">
+            <IconButton
+              icon={videoStatus === "on" ? Video : VideoOff}
+              label={videoStatus === "on" ? "Video Off" : "Video On"}
+              onClick={toggleVideo}
+            />
             <IconButton
               icon={isRecording ? Pause : Disc}
               label={isRecording ? "Recording Stop" : "Recording"}

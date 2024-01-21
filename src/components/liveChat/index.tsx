@@ -14,7 +14,7 @@ import {
   RemoteVideoStream,
 } from "@skyway-sdk/room";
 import { token } from "../../skyWay";
-import { Publication, LiveChatController } from "./components";
+import { Publication, LiveChatController, VideoStatus } from "./components";
 import { storage } from "../../firebaseApp";
 import { createFileToStorage } from "../../services/storage";
 
@@ -202,6 +202,10 @@ export const LiveChat: FC = () => {
     setRecording(false);
   };
 
+  const updateVideoStatus = (videoStatus: VideoStatus) => {
+    currentVideo?.setEnabled(videoStatus === "on");
+  };
+
   useEffect(() => {
     startVideo();
   }, []);
@@ -271,6 +275,7 @@ export const LiveChat: FC = () => {
         onLeave={leave}
         onRecordingStart={startRecording}
         onRecordingStop={stopRecording}
+        onVideoChange={updateVideoStatus}
       />
     </div>
   );
