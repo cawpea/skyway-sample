@@ -31,7 +31,7 @@ export const Button: FC<Props> = ({
   return (
     <button
       id="join"
-      type="button"
+      type={type}
       className={button({ priority, size })}
       {...rest}
     >

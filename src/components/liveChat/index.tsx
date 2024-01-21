@@ -1,5 +1,5 @@
 import { FC, useEffect, useMemo, useRef, useState } from "react";
-import { Input, useToast, Link, Flex, Box } from "@chakra-ui/react";
+import { useToast, Link } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   SkyWayStreamFactory,
@@ -26,7 +26,6 @@ export const LiveChat: FC = () => {
   const [isJoined, setJoined] = useState<boolean>(false);
   const [isRecording, setRecording] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const roomNameRef = useRef<HTMLInputElement>(null);
   const myIdRef = useRef<HTMLSpanElement>(null);
 
   const [currentAudio, setCurrentAudio] = useState<LocalAudioStream>();
@@ -84,9 +83,8 @@ export const LiveChat: FC = () => {
     allStream.current?.addTrack(stream.track);
   };
 
-  const join = async () => {
-    const roomName = roomNameRef.current?.value;
-    if (!roomName || !currentAudio || !currentVideo) return;
+  const join = async (roomName: string) => {
+    if (!currentAudio || !currentVideo) return;
 
     const context = await SkyWayContext.Create(token);
     const room = await SkyWayRoom.FindOrCreate(context, {
@@ -111,6 +109,13 @@ export const LiveChat: FC = () => {
   const leave = () => {
     if (!currentRoom || !me) return;
     currentRoom.leave(me);
+
+    if (isRecording) {
+      stopRecording();
+    }
+
+    setMe(undefined);
+    setCurrentRoom(undefined);
     setJoined(false);
   };
 
@@ -230,24 +235,6 @@ export const LiveChat: FC = () => {
           </span>
         </p>
         <div className="flex items-center gap-2">
-          <Flex align="center" gap="2">
-            <Box>room name:</Box>
-            <Input
-              bg="white"
-              w="200px"
-              type="text"
-              id="room-name"
-              ref={roomNameRef}
-              disabled={isJoined}
-            />
-          </Flex>
-          {isJoined ? (
-            <Button priority="destructive" onClick={leave}>
-              Leave
-            </Button>
-          ) : (
-            <Button onClick={join}>Join</Button>
-          )}
           {isRecording ? (
             <Button priority="destructive" onClick={stopRecording}>
               Recording Stop
@@ -288,7 +275,11 @@ export const LiveChat: FC = () => {
           )}
         </div>
       </div>
-      <LiveChatController />
+      <LiveChatController
+        isJoined={isJoined}
+        onJoin={(roomName) => join(roomName)}
+        onLeave={leave}
+      />
     </div>
   );
 };
