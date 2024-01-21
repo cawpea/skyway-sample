@@ -15,7 +15,7 @@ import {
 } from "@skyway-sdk/room";
 import { Button } from "components";
 import { token } from "../../skyWay";
-import { Publication } from "./components/publication";
+import { Publication, LiveChatController } from "./components";
 import { storage } from "../../firebaseApp";
 import { createFileToStorage } from "../../services/storage";
 
@@ -288,6 +288,7 @@ export const LiveChat: FC = () => {
           )}
         </div>
       </div>
+      <LiveChatController />
     </div>
   );
 };
