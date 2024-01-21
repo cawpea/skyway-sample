@@ -1,6 +1,7 @@
 import { FC, useState } from "react";
-import { Input } from "@chakra-ui/react";
-import { Button } from "components";
+import { HStack, Input } from "@chakra-ui/react";
+import { Button, IconButton } from "components";
+import { Disc, Pause } from "lucide-react";
 
 type Props = {
   isJoined?: boolean;
@@ -53,12 +54,13 @@ export const LiveChatController: FC<Props> = ({
           </Button>
         )}
         {isJoined && (
-          <Button
-            priority={isRecording ? "destructive" : "primary"}
-            onClick={isRecording ? stopRecording : startRecording}
-          >
-            {isRecording ? "Recording Stop" : "Recording Start"}
-          </Button>
+          <HStack ml="4">
+            <IconButton
+              icon={isRecording ? Pause : Disc}
+              label={isRecording ? "Recording Stop" : "Recording"}
+              onClick={isRecording ? stopRecording : startRecording}
+            />
+          </HStack>
         )}
       </form>
     </div>
