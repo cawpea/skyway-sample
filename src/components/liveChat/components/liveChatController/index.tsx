@@ -6,14 +6,29 @@ type Props = {
   isJoined?: boolean;
   onJoin?: (roomName: string) => void;
   onLeave?: () => void;
+  onRecordingStart?: () => void;
+  onRecordingStop?: () => void;
 };
 
 export const LiveChatController: FC<Props> = ({
   isJoined,
   onJoin,
   onLeave,
+  onRecordingStart,
+  onRecordingStop,
 }) => {
   const [roomName, setRoomName] = useState<string>("");
+  const [isRecording, setRecording] = useState<boolean>(false);
+
+  const startRecording = () => {
+    onRecordingStart && onRecordingStart();
+    setRecording(true);
+  };
+
+  const stopRecording = () => {
+    onRecordingStop && onRecordingStop();
+    setRecording(false);
+  };
 
   return (
     <div className="fixed left-0 right-0 bottom-10 mx-auto px-4 py-2 w-[400px] text-white bg-gray-900 border border-solid border-gray-600 rounded-full shadow-lg">
@@ -35,6 +50,14 @@ export const LiveChatController: FC<Props> = ({
         ) : (
           <Button type="button" onClick={() => onJoin && onJoin(roomName)}>
             Join
+          </Button>
+        )}
+        {isJoined && (
+          <Button
+            priority={isRecording ? "destructive" : "primary"}
+            onClick={isRecording ? stopRecording : startRecording}
+          >
+            {isRecording ? "Recording Stop" : "Recording Start"}
           </Button>
         )}
       </form>

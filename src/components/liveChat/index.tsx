@@ -13,7 +13,6 @@ import {
   RemoteAudioStream,
   RemoteVideoStream,
 } from "@skyway-sdk/room";
-import { Button } from "components";
 import { token } from "../../skyWay";
 import { Publication, LiveChatController } from "./components";
 import { storage } from "../../firebaseApp";
@@ -234,15 +233,6 @@ export const LiveChat: FC = () => {
             {me?.id}
           </span>
         </p>
-        <div className="flex items-center gap-2">
-          {isRecording ? (
-            <Button priority="destructive" onClick={stopRecording}>
-              Recording Stop
-            </Button>
-          ) : (
-            <Button onClick={startRecording}>Recording Start</Button>
-          )}
-        </div>
       </div>
 
       <div className="flex w-full h-[calc(100vh-64px-50px)] gap-4">
@@ -279,6 +269,8 @@ export const LiveChat: FC = () => {
         isJoined={isJoined}
         onJoin={(roomName) => join(roomName)}
         onLeave={leave}
+        onRecordingStart={startRecording}
+        onRecordingStop={stopRecording}
       />
     </div>
   );
